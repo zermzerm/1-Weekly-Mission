@@ -7,7 +7,7 @@ function verifyEmail(text: string) {
 
 function verifyPassword(text: string) {
   const regExp = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/;
-  return regExp.test(text) ? true : false;
+  return regExp.test(text);
 }
 
 export { verifyEmail, verifyPassword };
