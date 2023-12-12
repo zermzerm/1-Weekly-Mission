@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styled from 'styled-components';
 
 export const NavContainer = styled.div`
@@ -24,7 +25,7 @@ export const NavLibraryImg = styled.div`
   height: 24px;
 `;
 
-export const NavLoginButton = styled.button`
+export const NavLoginButton = styled(Link)`
   cursor: pointer;
   color: #f5f5f5;
   font-size: 18px;
@@ -34,7 +35,20 @@ export const NavLoginButton = styled.button`
   border: none;
   border-radius: 8px;
   background: linear-gradient(91deg, #6d6afe 0.12%, #6ae3fe 101.84%);
-  text-decoration: none;
+  text-align: center;
+`;
+
+export const NavLogoutButton = styled.div`
+  cursor: pointer;
+  color: #f5f5f5;
+  font-size: 18px;
+  font-weight: 600;
+  width: 128px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(91deg, #6d6afe 0.12%, #6ae3fe 101.84%);
+  text-align: center;
 `;
 
 export const ProfileDiv = styled.div`

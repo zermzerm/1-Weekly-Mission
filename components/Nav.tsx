@@ -18,6 +18,7 @@ export interface LoginState {
 
 export default function Nav() {
   const [login, setLogin] = useState<LoginState>();
+  const [isToken, setIsToken] = useState(false);
   const router = useRouter();
 
   const url = router.pathname;
@@ -31,8 +32,17 @@ export default function Nav() {
     }
   };
 
+  function handleLogOut() {
+    localStorage.clear();
+    setIsToken(false);
+    router.push('/');
+  }
+
   useEffect(() => {
     setLogin(undefined);
+    if (localStorage.getItem('token')) {
+      setIsToken(true);
+    }
   }, [url]);
   return (
     <N.NavContainer>
@@ -42,10 +52,10 @@ export default function Nav() {
             <Image src="/linkbrary.svg" fill priority alt="libraryLogo" />
           </N.NavLibraryImg>
         </Link>
-        {login?.id ? (
-          <Profile item={login} />
+        {isToken ? (
+          <N.NavLogoutButton onClick={handleLogOut}>로그아웃</N.NavLogoutButton>
         ) : (
-          <N.NavLoginButton onClick={handleLoad}>로그인</N.NavLoginButton>
+          <N.NavLoginButton href="/signin">로그인</N.NavLoginButton>
         )}
       </N.NavWrapper>
     </N.NavContainer>

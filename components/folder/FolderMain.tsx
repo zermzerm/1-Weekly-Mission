@@ -39,6 +39,8 @@ export default function FolderMain() {
   const [value, setValue] = useState('');
   const [folderId, setFolerId] = useState('');
 
+  console.log(localStorage.getItem('token'));
+
   const handleLoad = useCallback(async (id = '') => {
     const { data } = await getData('users/1/folders');
     const link = await getData('users/1/links?folderId=', id);

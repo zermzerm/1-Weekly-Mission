@@ -6,17 +6,11 @@ interface SignButtonProps {
   pwCheck?: number;
 }
 
-export default function SignButton({ text, check, pwCheck }: SignButtonProps) {
+export default function SignButton({ text, check }: SignButtonProps) {
   return (
     <>
       <Button
-        disabled={
-          text === '로그인'
-            ? false
-            : check !== 0 || pwCheck !== 0
-            ? true
-            : false
-        }
+        disabled={text === '로그인' ? false : check !== 0 ? true : false}
         checkColor={check}
       >
         {check === 0 ? text : '이메일 중복 확인 먼저 하세요'}

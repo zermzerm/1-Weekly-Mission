@@ -1,25 +1,12 @@
 import styled from 'styled-components';
 import Input from '../Input';
-import { useState, KeyboardEvent, MouseEvent } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import axios from '@/pages/api/axios';
 import { useRouter } from 'next/router';
 import SignButton from '../Button';
 
-interface SigninProps {
-  error?: {
-    name: string;
-    message: string;
-    status: number;
-  };
-  data?: {
-    accessToken: string;
-    refreshToen: string;
-  };
-}
-
-export default function SignMain() {
+export default function SigninMain() {
   const router = useRouter();
-  const [signinToken, setSigninToken] = useState<SigninProps>();
   const [signinEmail, setSigninEmail] = useState('');
   const [signinPassword, setSigninPassword] = useState('');
   const [signError, setSignError] = useState(0);
@@ -35,8 +22,8 @@ export default function SignMain() {
     });
     if (res !== 400) {
       const signinData = res.data.data;
-      setSigninToken(signinData);
       setSignError(0);
+      localStorage.setItem('token', signinData.accessToken);
       router.push('/folder');
     } else {
       setSignError(res);

@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import Input from '../Input';
-import { ErrorMsg } from '@/constant/constants';
-import { useState } from 'react';
+import { useState, KeyboardEvent, MouseEvent } from 'react';
 import axios from '@/pages/api/axios';
 import { useRouter } from 'next/router';
 import SignButton from '../Button';
 
-export interface SigninProps {
+interface SigninData {
   error?: {
     name: string;
     message: string;
@@ -18,66 +17,122 @@ export interface SigninProps {
   };
 }
 
-export default function SigninMain() {
+export default function SignupMain() {
   const router = useRouter();
-  const [signinToken, setSigninToken] = useState<SigninProps>();
+  const [signinToken, setSigninToken] = useState<SigninData>();
   const [signinEmail, setSigninEmail] = useState('');
   const [signinPassword, setSigninPassword] = useState('');
   const [signError, setSignError] = useState(0);
+  const [passwordCheck, setPasswordCheck] = useState('');
+  const [emailErrorStatus, setEmailErrorStatus] = useState(1);
+  const [pwErrorStatus, setPwErrorStatus] = useState(1);
+
+  async function handleEmailSubmit(e: MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    setSignError(0);
+    //이메일 오류 있을 경우
+    if (emailErrorStatus === 3) return;
+    const res: any = await axios.post('/check-email', {
+      email: signinEmail,
+    });
+    if (res.status === 200) {
+      alert('사용 가능한 이메일 입니다.');
+      setEmailErrorStatus(0);
+    } else if (res === 400) {
+      setEmailErrorStatus(res);
+    } else {
+      setEmailErrorStatus(res);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const res: any = await axios.post('/sign-in', {
+    setSignError(0);
+    if (pwErrorStatus !== 0) return setSignError(400);
+    const res: any = await axios.post('/sign-up', {
       email: signinEmail,
       password: signinPassword,
     });
     if (res !== 400) {
       const signinData = res.data.data;
       setSigninToken(signinData);
+      // localStorage.setItem('token', signinToken);
       setSignError(0);
-      // router.push('/folderPage');
+      router.push('/folder');
     } else {
       setSignError(res);
     }
   }
+
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e);
+    }
+  };
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onKeyDown={handleOnKeyPress}>
         <SigninMainWrapper>
           <InputContainer>
             <InputDiv>이메일</InputDiv>
             <Input
               inputType={'email'}
-              text={ErrorMsg.emptyEmail}
               emailChange={setSigninEmail}
               passwordChange={setSigninPassword}
               signError={signError}
+              setPasswordCheck={setPasswordCheck}
+              passwordCheck={passwordCheck}
+              emailErrorStatus={emailErrorStatus}
+              setEmailErrorStatus={setEmailErrorStatus}
+              pwErrorStatus={emailErrorStatus}
+              setPwErrorStatus={setEmailErrorStatus}
             />
+            <EmailButton
+              disabled={emailErrorStatus !== 0 ? false : true}
+              onClick={handleEmailSubmit}
+              check={emailErrorStatus}
+            >
+              {emailErrorStatus !== 0
+                ? '이메일 중복 확인'
+                : '이메일 중복 확인 완료'}
+            </EmailButton>
           </InputContainer>
           <InputContainer>
             <InputDiv>비밀번호</InputDiv>
             <Input
               inputType={'password'}
-              text={ErrorMsg.emptyPassword}
               emailChange={setSigninEmail}
               passwordChange={setSigninPassword}
               signError={signError}
-              pageCheck={'signup'}
+              setPasswordCheck={setPasswordCheck}
+              passwordCheck={passwordCheck}
+              emailErrorStatus={emailErrorStatus}
+              setEmailErrorStatus={setEmailErrorStatus}
+              pwErrorStatus={pwErrorStatus}
+              setPwErrorStatus={setPwErrorStatus}
             />
           </InputContainer>
           <InputContainer>
             <InputDiv>비밀번호 확인</InputDiv>
             <Input
               inputType={'passwordCheck'}
-              text={ErrorMsg.emptyPassword}
               emailChange={setSigninEmail}
               passwordChange={setSigninPassword}
               signError={signError}
-              pageCheck={'signup'}
+              setPasswordCheck={setPasswordCheck}
+              passwordCheck={passwordCheck}
+              emailErrorStatus={emailErrorStatus}
+              setEmailErrorStatus={setEmailErrorStatus}
+              pwErrorStatus={pwErrorStatus}
+              setPwErrorStatus={setPwErrorStatus}
             />
           </InputContainer>
         </SigninMainWrapper>
-        <SignButton text={'로그인'} />
+        <SignButton
+          pwCheck={pwErrorStatus}
+          check={emailErrorStatus}
+          text={'회원가입'}
+        />
       </form>
     </>
   );
@@ -99,7 +154,7 @@ const InputDiv = styled.div`
   font-size: 14px;
 `;
 
-const Button = styled.button`
+const EmailButton = styled.button<{ check: number }>`
   width: 100%;
   margin-top: 30px;
   font-size: 18px;
@@ -108,6 +163,10 @@ const Button = styled.button`
   border: none;
   padding: 16px 20px;
   border-radius: 8px;
-  background: linear-gradient(91deg, #6d6afe 0.12%, #6ae3fe 101.84%);
+  background: ${(props) =>
+    props.check !== 0
+      ? 'linear-gradient(91deg, #6d6afe 0.12%, #6ae3fe 101.84%)'
+      : '#808080'};
   cursor: pointer;
+  text-align: center;
 `;
